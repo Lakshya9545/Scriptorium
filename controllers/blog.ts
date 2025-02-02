@@ -36,6 +36,22 @@ const createBlog = async (req: Request, res: Response) => {
   }
 };
 
+const getAllBlogs = async (req: Request, res: Response) => {
+  try {
+    const blogs = await prisma.blog.findMany({
+      include: {
+        author: {
+          select: { username: true, email: true }, 
+        },
+      },
+    });
+
+    res.json({ blogs });
+  } catch (err) {
+    console.error("Get Blogs Error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 
-export { createBlog };
+export { createBlog, getAllBlogs };
