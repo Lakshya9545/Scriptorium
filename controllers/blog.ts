@@ -53,5 +53,66 @@ const getAllBlogs = async (req: Request, res: Response) => {
   }
 };
 
+const getBlogById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
 
-export { createBlog, getAllBlogs };
+    const blog = await prisma.blog.findUnique({
+      where: { id },
+      include: { author: { select: { id: true, username: true } } }, // Include author details
+    });
+
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+    res.json(blog);
+  } catch (error) {
+    console.error("Error fetching blog:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+ const updateBlog = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { title, content } = req.body;
+
+        const existingBlog = await prisma.blog.findUnique({ where: { id } });
+        if (!existingBlog) return res.status(404).json({ message: "Blog not found" });
+
+
+        const updatedBlog = await prisma.blog.update({
+            where: { id },
+            data: { title, content, updatedAt: new Date() }
+        });
+
+        res.json({ message: "Blog updated", updatedBlog });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Something went wrong" });
+    }
+};
+
+ const deleteBlog = async (req: Request, res: Response) => {
+  try {
+      const { id } = req.params;
+
+      
+      const existingBlog = await prisma.blog.findUnique({ where: { id } });
+      if (!existingBlog) return res.status(404).json({ message: "Blog not found" });
+
+      await prisma.blog.delete({ where: { id } });
+
+      res.json({ message: "Blog deleted successfully" });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+
+
+  
+
+export { createBlog, getAllBlogs,getBlogById,updateBlog,deleteBlog };
