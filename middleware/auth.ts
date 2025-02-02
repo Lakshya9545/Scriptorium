@@ -1,21 +1,25 @@
-import type { Request, Response,NextFunction } from "express"; 
+import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import prisma from "../prisma/prismaClient";
 
-export interface AuthRequest extends Request {
-  userId?: string;
+interface AuthRequest extends Request {
+  user?: { id: string };
 }
 
-const authMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
-  const token = req.cookies?.token;
-  
-  if (!token) return res.status(401).json({ message: "Unauthorized" });
-
+const authMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { userId: string };
-    req.userId = decoded.userId;
+    const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
+
+    if (!user) return res.status(401).json({ message: "Unauthorized" });
+
+    req.user = { id: user.id }; 
     next();
   } catch (err) {
-    res.status(401).json({ message: "Invalid token" });
+    res.status(401).json({ message: "Unauthorized" });
   }
 };
 
