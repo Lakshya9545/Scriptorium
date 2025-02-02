@@ -19,6 +19,7 @@ model User {
   email    String  @unique
   password String
   blogs    Blog[]  @relation("UserBlogs") 
+  comments  Comment[] @relation("UserComments")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -30,7 +31,20 @@ model Blog {
   content   String
   author    User     @relation(fields: [authorId], references: [id], name: "UserBlogs") 
   authorId  String
+  comments  Comment[] @relation("BlogComments")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  blogId    String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  blog      Blog     @relation("BlogComments", fields: [blogId], references: [id])
+  user      User     @relation("UserComments", fields: [userId], references: [id])
 }
