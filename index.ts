@@ -14,7 +14,7 @@ app.use(helmet());
 app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(cors({
-  origin: process.env.CLIENT_URL, // Add this to your .env
+  origin: process.env.CLIENT_URL,
   credentials: true
 }));
 
