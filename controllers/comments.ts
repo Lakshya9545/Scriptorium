@@ -19,12 +19,12 @@ interface AuthRequest extends Request {
     console.log("Debug - blogId:", blogId);
     console.log("Debug - content:", content);
 
-    // ✅ Ensure user is authenticated
+    
     if (!userId) {
         return res.status(401).json({ message: "User not authenticated" });
     }
 
-    // ✅ Validate inputs
+
     if (!blogId || !content) {
         return res.status(400).json({ message: "Blog ID and content are required" });
     }
@@ -33,8 +33,8 @@ interface AuthRequest extends Request {
         const comment = await prisma.comment.create({
             data: {
                 content: content,
-                blogId: String(blogId), // ✅ Ensure it's a string
-                userId: userId, // ✅ Already a string, no need to convert
+                blogId: String(blogId), 
+                userId: userId, 
             },
         });
 
@@ -48,7 +48,7 @@ interface AuthRequest extends Request {
   const getComments = async (req: Request, res: Response) => {
     const { id: blogId } = req.params;
 
-    // ✅ Validate blogId
+    
     if (!blogId) {
         return res.status(400).json({ message: "Blog ID is required" });
     }
@@ -57,7 +57,7 @@ interface AuthRequest extends Request {
         const comments = await prisma.comment.findMany({
             where: { blogId: String(blogId) },
             include: {
-                user: { select: { username: true, email: true } }, // Include user details for each comment
+                user: { select: { username: true, email: true } }, 
             },
         });
 
