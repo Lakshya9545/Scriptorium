@@ -57,9 +57,9 @@ Ensure you have the following installed:
    ```
 
 ## API Endpoints
-
-     ```bash
-     import Scriptorium.postman_collection.json in postman
+   ```sh
+   import Scriptorium.postman_collection.json in postman
+   ```
     
 
 
